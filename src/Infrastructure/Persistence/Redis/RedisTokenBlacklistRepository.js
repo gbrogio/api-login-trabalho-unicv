@@ -1,18 +1,25 @@
-const RedisClient = require('./RedisClient');
+const { redisClient } = require('./RedisClient');
 
 class RedisTokenBlacklistRepository {
-    constructor() {
-        this.client = RedisClient;
+    constructor(prefix = 'blacklist:') {
+        this.client = redisClient;
+        this.prefix = prefix;
     }
 
-    async add(token) {
-        // Add token to blacklist with an expiration (e.g., 1 day)
-        await this.client.set(token, 'blacklisted', 'EX', 86400);
+    key(token) {
+        return `${this.prefix}${token}`;
+    }
+
+    async add(token, ttlSeconds) {
+        const key = this.key(token);
+        // Set value with TTL in seconds
+        await this.client.set(key, '1', { EX: ttlSeconds });
     }
 
     async isBlacklisted(token) {
-        const result = await this.client.get(token);
-        return result === 'blacklisted';
+        const key = this.key(token);
+        const result = await this.client.get(key);
+        return result !== null;
     }
 }
 

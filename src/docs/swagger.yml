@@ -4,6 +4,12 @@ openapi: 3.0.0
 info:
   title: Login API
   version: 1.0.0
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /auth/register:
     post:
@@ -22,7 +28,7 @@ paths:
                 password:
                   type: string
       responses:
-        '201':
+        "201":
           description: User registered successfully
   /auth/login:
     post:
@@ -39,5 +45,25 @@ paths:
                 password:
                   type: string
       responses:
-        '200':
+        "200":
           description: User logged in successfully
+  /auth/logout:
+    post:
+      summary: Logout user (revokes token)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logout realizado com sucesso
+        "401":
+          description: Unauthorized
+  /auth/me:
+    get:
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user info
+        "401":
+          description: Unauthorized
