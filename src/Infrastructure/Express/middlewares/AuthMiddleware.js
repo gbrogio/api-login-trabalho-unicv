@@ -12,7 +12,7 @@ async function authenticateToken(req, res, next) {
 		}
 
 		const token = authHeader.substring(7);
-
+		
 		// Check blacklist first
 		const isBlacklisted = await blacklistRepo.isBlacklisted(token);
 		if (isBlacklisted) {
@@ -28,6 +28,7 @@ async function authenticateToken(req, res, next) {
 		req.token = token;
 		return next();
 	} catch (err) {
+		console.log(err)
 		return res.status(401).json({ message: 'Não autorizado' });
 	}
 }
